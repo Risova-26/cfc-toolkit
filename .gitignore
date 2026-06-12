@@ -1,0 +1,13 @@
+build/
+*.o
+*.a
+*.so
+*.out
+a.out
+__pycache__/
+*.pyc
+venv/
+results/*.png
+results/*.pdf
+.DS_Store
+*.swp
