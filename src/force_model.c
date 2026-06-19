@@ -13,6 +13,11 @@
 
 #include "force_model.h"
 #include <stdio.h>
+#include <math.h>           /* sin() - requires -lm at link time */
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif 
 
 double predict_shearing(CuttingParams p, double h) {
     /* Unit check: [N/mm²] × [mm] × [mm] = [N/mm²] × [mm²] = [N] ✓ */
@@ -52,4 +57,22 @@ void print_force_table(CuttingParams p, double h_min, double h_max, int n_steps)
         printf("%-12.4f %-14.4f %-15.4f %-12.4f\n", h, Fs, Fp, Ft);
     }
     printf("\n");
+}
+
+/*------------ Machining parameter functions -------------------*/
+
+double calc_spindle_speed(double D_mm, double Vc_m_min) {
+    if (D_mm <= 0.0 || Vc_m_min <= 0.0) return -1.0;
+    return (Vc_m_min * 1000.0) / (M_PI * D_mm);
+}
+
+double calc_table_feed(double fz_mm, int Z, double N_rpm) {
+    if (fz_mm <= 0.0 || Z < 1 || N_rpm <= 0.0) return -1.0;
+    return fz_mm * (double)Z * N_rpm;
+}
+
+double calc_chip_thickness_simple(double fz_mm, double phi_rad) {
+    /* h(phi) = fz x sin(phi). Zero or positive only -no negative chip.*/
+    double h = fz_mm * sin(phi_rad);
+    return (h > 0.0) ? h:0.0;
 }

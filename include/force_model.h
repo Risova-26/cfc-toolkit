@@ -54,5 +54,26 @@ double predict_ploughing(CuttingParams p);            /* Ke*b   [N] */
  *   n_steps : number of rows in table
  */
 void print_force_table(CuttingParams p, double h_min, double h_max, int n_steps);
+typedef struct {
+    double  D_mm;        /* tool diameter        [mm]    */
+    double  Vc_m_min;    /* cutting speed        [m/min] */
+    int     Z;           /* number of flutes     [-]    */
+    double fz_mm;        /* feed per tooth       [mm/tooth] */
+    double ae_mm;        /* radial depth of cut  [mm]       */
+    double ap_mm;         /* axial depth of cut   [mm]   */    
+} CuttingConditions;
+
+/* calc_spindle_speed: N [RPM] = (Vc x 1000) / (pi x D)
+   Returns -1.0 if D<=0 or Vc <= 0.*/
+double calc_spindle_speed(double D_mm, double Vc_m_min);
+
+/* calc_table_feed: Vf [mm/min] = fz x Z x N
+   Returns -1.0 if any input is invalid. */
+double calc_table_feed(double fz_mm, int Z, double N_rpm);
+
+/* calc_chip_thickness_simple: h [mm] = fz x sin(phi)
+   maximum at phi=phi/2: h=fz. Returns 0.0 outside engagement. */
+double calc_chip_thickness_simple(double fz_mm, double phi_rad);
+
 
 #endif /* FORCE_MODEL_H */

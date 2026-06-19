@@ -32,3 +32,33 @@ h = feed_per_tooth × sin(engagement_angle) rather than just feed_per_tooth?
 
 **Next:** Day 2 — compile force_model.c as object file, verify zero warnings,
 complete G1-G4 gates.
+
+## Day 2
+
+**What i built:** CuttingConditions struct in force_model.h
+calc_spindle_speed(), calc_table_feed(), calc_chip_thickness_simple() in force_model.c machining calculator.c in amrc-prep.
+
+**Key correction from plan.** Priest 2024 uses Vc=90 m/min not 60.
+N=1790 RPM confirmed by hand calculation before running code.
+
+**Numbers verified:**
+- N  = 1790.5 RPM for D=16, Vc=90m/min
+- Vf = 716.2 mm/min for fz=0.08mm/tooth, Z=5
+- h(phi=90deg) = fz = 0.0800mm (maximum chip thickness)
+- h(phi=0deg)  = 0.0000mm (no chip at tool entry - limiting case)
+- Tooth-passing frequency = 149.2 Hz
+- Kistler at 51200 Hz gives 172x Nyquist margin
+
+**Physical insight:** h(phi) = fz x sin(phi). Chip thickness is NOT constant during a cut.
+It varies sinusioidally - zero at entry, maximum at phi=90deg, zero at exit.
+This is why cutting force oscillates at tooth-passing frequency.
+The dynamometer must sample fast enough to capture these oscillations faithfully.
+
+**Why link_libraries(m):** sin() lives in the C math library.
+Unlike Python, C does not include it automatically. 
+-lm tells the linker to include it. 
+Without this the build fails even though the code compiles.
+
+**Next:** Day 3 - full engagement logic. calc_phi_start(),
+calc_phi_exit(), is_engaged().
+The angular window where the tool is actually cutting material.
