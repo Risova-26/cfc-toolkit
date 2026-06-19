@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Mandatory warnings — mirrors AMRC professional standard
 add_compile_options(-Wall -Wextra -Wpedantic)
 
+link_libraries(m)
+
 include_directories(include)
 
 # Sources grow each day — uncomment as files are created
