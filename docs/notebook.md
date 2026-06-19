@@ -59,6 +59,24 @@ Unlike Python, C does not include it automatically.
 -lm tells the linker to include it. 
 Without this the build fails even though the code compiles.
 
+"A colleague says the tool is running at 2500 RPM with a 10mm diameter tool. What cutting speed Vc does this correspond to? Is this higher or lower than Priest's test conditions, and what does that imply for tool wear rate on Ti-6Al-4V?"
+Ans: Vc = 2500 × π × 10 / 1000 = 78.54 m/min
+
+This is lower than Priest's 90 m/min.
+
+Tool wear rate is slower because:
+- Lower cutting speed = less heat generated per unit time at the
+  tool-chip interface
+- Ti-6Al-4V has very low thermal conductivity (~7 W/mK vs ~50 for
+  steel) so heat cannot escape into the workpiece — it stays in the
+  tool and accelerates wear
+- Less heat = slower chemical reaction between tool coating and
+  titanium = slower wear rate
+
+Trade-off: slower wear but also lower MRR (same fz, lower N means
+lower Vf). The engineer is trading productivity for tool life.
+This is a real decision made before every Ti-6Al-4V trial at AMRC.
+
 **Next:** Day 3 - full engagement logic. calc_phi_start(),
 calc_phi_exit(), is_engaged().
 The angular window where the tool is actually cutting material.
