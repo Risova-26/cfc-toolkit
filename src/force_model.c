@@ -76,3 +76,36 @@ double calc_chip_thickness_simple(double fz_mm, double phi_rad) {
     double h = fz_mm * sin(phi_rad);
     return (h > 0.0) ? h:0.0;
 }
+
+/* Engagement geometry fuctions */
+
+/*  calc_phi_start: returns the angle [rad] where the tooth enters the workpiece.
+    Formula: arccos((R-ae)/R)
+    Physical meaning: the tooth first touch material when its circular path
+    reaches the workpiece edge, which is (R-ae) from the tool centre. */
+double calc_phi_start(double ae_mm, double R_mm){
+    return acos((R_mm - ae_mm)/R_mm);
+}
+
+/*  calc_phi_exit: returns pi[rad] = 180 degrees.
+    For up-milling the tooth exits at the centreline of the tool path.
+    Parameters kept for future down-milling extension.*/
+double calc_phi_exit(double ae_mm, double R_mm) {
+    (void)ae_mm;    /* unused for up-milling - suppress - Wunused-parameter */
+    (void)R_mm;
+    return M_PI;
+}
+
+/*  is_engaged: returns 1 if the tooth is cutting at phi_rad, 0 if in air.
+    Checks whether phi_rad falls inside [phi_start, phi_exit]. */
+int is_engaged(double phi_rad, double phi_start, double phi_exit){
+    return (phi_rad >= phi_start && phi_rad <= phi_exit) ? 1:0;
+}
+
+/*  calc_chip_thickness: angle-aware chip thickness [mm]
+    Retruns fz* sin(phi) when engaged, 0.0 when outside the window.*/
+double calc_chip_thickness(double fz_mm, double phi_rad,
+                            double phi_start, double phi_exit){
+    if (!is_engaged(phi_rad, phi_start, phi_exit)) return 0.0;
+    return fz_mm * sin(phi_rad);
+}

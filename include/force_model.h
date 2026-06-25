@@ -14,6 +14,10 @@
 #ifndef FORCE_MODEL_H
 #define FORCE_MODEL_H
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 /* CuttingParams — all model parameters grouped in one struct.
  * In Week 3 this becomes a C++ class with methods.
  * A struct stores its members contiguously in memory —
@@ -74,6 +78,27 @@ double calc_table_feed(double fz_mm, int Z, double N_rpm);
 /* calc_chip_thickness_simple: h [mm] = fz x sin(phi)
    maximum at phi=phi/2: h=fz. Returns 0.0 outside engagement. */
 double calc_chip_thickness_simple(double fz_mm, double phi_rad);
+
+/* calc_phi_start: engagement start angle [rad] for up-milling
+   Formula: acrcross ((R-ae)/R)
+   ae_mm [mm] = radial depth of cut, R_mm [mm] = tool radius = D/2 */
+double calc_phi_start(double ae_mm, double R_mm);
+
+/* calc_phi_exit: engagement exit angle [rad] for up-milling
+   Return pi (180 degrees) - tooth exits at the centreline for up-milling.
+   ae_mm and R_mm kept as parameters for future down-milling extension. */
+double calc_phi_exit(double ae_mm, double R_mm);
+
+/* is_engaged: returns 1 if phi_rad is inside the engagement window, 0 if in air
+   phi_rad [rad], phi_start [rad], phi_exit [rad]
+   Use calc_phi_start() and calc_phi_exit() to get the window boundaries. */
+int is_engaged(double phi_rad, double phi_start, double phi_exit);
+
+/* calc_chip_thickness: angle-aware chip thickness [mm]
+   Returns fz * sin(phi) if engaged, 0.0 if outside window.
+   This replaces calc_chip_thickness_simeple() which had no engagement check. */
+double calc_chip_thickness(double fz_mm, double phi_rad,
+                           double phi_start, double phi_exit);
 
 
 #endif /* FORCE_MODEL_H */
