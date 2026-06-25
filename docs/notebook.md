@@ -80,3 +80,36 @@ This is a real decision made before every Ti-6Al-4V trial at AMRC.
 **Next:** Day 3 - full engagement logic. calc_phi_start(),
 calc_phi_exit(), is_engaged().
 The angular window where the tool is actually cutting material.
+
+## Day 3
+Maximum h=fz always occurs at phi=90 degree. Midpoint of the engagement window is not point of maximum h. Both are inside the window for any real cut.
+
+**What I built:**
+- phi_start = 0.7954 rad = 45.6 deg for ae=2.4mm, D=16mm
+- phi_exit = 3.1416 rad = 180.0 deg
+- Engagement arc = 134.4 deg out of 360 deg
+- h(90 deg) = 0.0800 mm = fz exactly
+- h(0 deg) = h(270 deg) = 0.0000 mm (outside window)
+
+**Assessment question:**
+For Priest 2024 conditions (ae=2.4mm, D=16mm, fz=0.08mm/tooth):
+- Enagement arc = 180 - 45.6 = 134.4 degrees
+- Midpoint phi = (45.6 + 180) / 2 = 112.8 degrees
+- h(112.8 deg) = 0.08 * sin(112.8 * pi/180) = 0.08 * 0.9219 = 0.0737 mm
+- Tooth-passing frequency = Z * N / 60 = 5* 1790 / 60 = 149.2 Hz
+
+**Physical insight:**
+Maximum h = fz always occurs at phi=90 deg regardless of ae.
+The midpoint of the engagement window (112.8 deg) is NOT the point of
+maximum chip thickness. h is maximum where sin(phi)=1, not at the
+geometric midpoint. The engagement arc (134.4 deg) is only 37% of a 
+full revolution - the tool is cutting air for the other 63%.
+
+**Parameters?**
+Why does calc_phi_exit take ae and R as parameters if it ignores them?
+Answer: consistency. Future down-milling implementation will need them.
+Keeping the signature the same now means callers don't need to change later.
+
+**Next action:**
+Day 4 - Tool geometry structs (helix angle, rake angle, bull-nose radius)
+and ForceCoefficients struct (Ktc, Krc, Kac, Kte, Kre, Kae).
