@@ -67,6 +67,16 @@ typedef struct {
     double ap_mm;         /* axial depth of cut   [mm]   */    
 } CuttingConditions;
 
+typedef struct {
+   double D;            /* diameter [mm] */
+   int Z;               /* number of flutes*/
+   double helix_deg;    /* helix angle [degrees]*/
+   double rake_deg;     /* rake angle [degree]*/
+   double r_corner;     /* corner radius [mm]*/
+} Tool;
+
+double calc_tooth_passing_freq(const Tool *tool, double N);
+
 /* calc_spindle_speed: N [RPM] = (Vc x 1000) / (pi x D)
    Returns -1.0 if D<=0 or Vc <= 0.*/
 double calc_spindle_speed(double D_mm, double Vc_m_min);
