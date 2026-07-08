@@ -109,3 +109,8 @@ double calc_chip_thickness(double fz_mm, double phi_rad,
     if (!is_engaged(phi_rad, phi_start, phi_exit)) return 0.0;
     return fz_mm * sin(phi_rad);
 }
+
+double calc_tooth_passing_freq(const Tool *tool, double N)
+{
+    return tool->Z * N / 60.0;
+}
