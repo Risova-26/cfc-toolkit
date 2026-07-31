@@ -75,6 +75,12 @@ typedef struct {
    double r_corner;     /* corner radius [mm]*/
 } Tool;
 
+typedef struct {
+   double Kc;     /* cutting/shearing coefficient [N/mm2]*/
+   double Ke;     /* edge/ploughing coeffienct [N/mm]*/
+} ForceCoefficients;
+
+
 double calc_tooth_passing_freq(const Tool *tool, double N);
 
 /* calc_spindle_speed: N [RPM] = (Vc x 1000) / (pi x D)
@@ -109,6 +115,16 @@ int is_engaged(double phi_rad, double phi_start, double phi_exit);
    This replaces calc_chip_thickness_simeple() which had no engagement check. */
 double calc_chip_thickness(double fz_mm, double phi_rad,
                            double phi_start, double phi_exit);
+
+void compute_force_revolution(
+   const Tool *tool,
+   const CuttingConditions *cond,
+   const ForceCoefficients *coeffs,
+   double *Fx_out,
+   double *Fy_out,
+   double *Fz_out,
+   int n_samples
+);
 
 
 #endif /* FORCE_MODEL_H */
