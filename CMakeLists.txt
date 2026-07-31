@@ -9,9 +9,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Mandatory warnings — mirrors AMRC professional standard
 add_compile_options(-Wall -Wextra -Wpedantic)
 
-link_libraries(m)
-
-include_directories(include)
 
 # Sources grow each day — uncomment as files are created
 set(C_SOURCES
@@ -20,8 +17,30 @@ set(C_SOURCES
     # src/signal_proc.c    # Day 10
 )
 
-# Targets — uncomment as needed
-# add_library(force_model_static STATIC ${C_SOURCES})   # Day 6
-# add_library(force_model_shared SHARED ${C_SOURCES})   # Day 7
-# add_executable(cfc_main src/main.c)                   # Day 6
-# find_package(pybind11 REQUIRED)                        # Day 16
+add_library(force_model STATIC ${C_SOURCES})
+
+target_include_directories(force_model
+    PUBLIC
+        ${PROJECT_SOURCE_DIR}/include
+)
+
+target_link_libraries(force_model
+    PUBLIC
+        m
+)
+
+enable_testing()
+
+add_executable(test_force_revolution
+    tests/test_force_revolution.c
+)
+
+target_link_libraries(test_force_revolution
+    PRIVATE
+        force_model
+)
+
+add_test(
+    NAME force_revolution_bounds
+    COMMAND test_force_revolution
+)

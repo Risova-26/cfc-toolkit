@@ -114,3 +114,34 @@ double calc_tooth_passing_freq(const Tool *tool, double N)
 {
     return tool->Z * N / 60.0;
 }
+
+void compute_force_revolution(
+    const Tool *tool,
+    const CuttingConditions *cond,
+    const ForceCoefficients *coeffs,
+    double *Fx_out,
+    double *Fy_out,
+    double *Fz_out,
+    int n_samples)
+{
+    if (tool == NULL ||
+        cond == NULL ||
+        coeffs == NULL ||
+        Fx_out == NULL ||
+        Fy_out == NULL ||
+        Fz_out == NULL ||
+        n_samples <= 0) {
+        return;
+    }
+
+    (void)tool;
+    (void)cond;
+    (void)coeffs;
+
+    for(int i = 0; i < n_samples; ++i) {
+        Fx_out[i] = 0.0;
+        Fy_out[i] = 0.0;
+        Fz_out[i] = 0.0;
+    }
+
+}
