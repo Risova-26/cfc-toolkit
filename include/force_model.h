@@ -76,8 +76,13 @@ typedef struct {
 } Tool;
 
 typedef struct {
-   double Kc;     /* cutting/shearing coefficient [N/mm2]*/
-   double Ke;     /* edge/ploughing coeffienct [N/mm]*/
+    double Ktc;  /* tangential cutting coefficient [N/mm²] */
+    double Krc;  /* radial cutting coefficient     [N/mm²] */
+    double Kac;  /* axial cutting coefficient      [N/mm²] */
+
+    double Kte;  /* tangential edge coefficient    [N/mm] */
+    double Kre;  /* radial edge coefficient        [N/mm] */
+    double Kae;  /* axial edge coefficient         [N/mm] */
 } ForceCoefficients;
 
 

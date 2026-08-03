@@ -44,3 +44,12 @@ add_test(
     NAME force_revolution_bounds
     COMMAND test_force_revolution
 )
+
+add_executable(generate_force_csv
+    app/generate_force_csv.c
+)
+
+target_link_libraries(generate_force_csv
+    PRIVATE
+        force_model
+)

@@ -124,24 +124,89 @@ void compute_force_revolution(
     double *Fz_out,
     int n_samples)
 {
-    if (tool == NULL ||
-        cond == NULL ||
-        coeffs == NULL ||
-        Fx_out == NULL ||
+    /*
+     * The output pointers and length must be valid before any memory access.
+     */
+    if (Fx_out == NULL ||
         Fy_out == NULL ||
         Fz_out == NULL ||
         n_samples <= 0) {
         return;
     }
 
-    (void)tool;
-    (void)cond;
-    (void)coeffs;
-
-    for(int i = 0; i < n_samples; ++i) {
+    /*
+     * Initialise outputs deterministically. If the physical inputs are invalid,
+     * the caller receives zero forces rather than uninitialised memory.
+     */
+    for (int i = 0; i < n_samples; ++i) {
         Fx_out[i] = 0.0;
         Fy_out[i] = 0.0;
         Fz_out[i] = 0.0;
     }
 
+    if (tool == NULL ||
+        cond == NULL ||
+        coeffs == NULL ||
+        tool->D <= 0.0 ||
+        tool->Z < 1 ||
+        cond->fz_mm < 0.0 ||
+        cond->ae_mm <= 0.0 ||
+        cond->ae_mm > tool->D ||
+        cond->ap_mm < 0.0) {
+        return;
+    }
+
+    const double radius = tool->D / 2.0;
+    const double phi_start = calc_phi_start(cond->ae_mm, radius);
+    const double phi_exit = calc_phi_exit(cond->ae_mm, radius);
+    const double flute_spacing = 2.0 * M_PI / (double)tool->Z;
+
+    for (int sample = 0; sample < n_samples; ++sample) {
+        /*
+         * Do not include 2*pi as a separate final point. It is physically
+         * identical to zero and would duplicate one sample per revolution.
+         */
+        const double phi =
+            2.0 * M_PI * (double)sample / (double)n_samples;
+
+        for (int flute = 0; flute < tool->Z; ++flute) {
+            const double flute_angle =
+                fmod(phi + (double)flute * flute_spacing,
+                     2.0 * M_PI);
+
+            if (!is_engaged(flute_angle, phi_start, phi_exit)) {
+                continue;
+            }
+
+            const double h = calc_chip_thickness(
+                cond->fz_mm,
+                flute_angle,
+                phi_start,
+                phi_exit
+            );
+
+            /*
+             * Local rotating tool-frame forces.
+             */
+            const double Ft =
+                (coeffs->Ktc * h + coeffs->Kte) * cond->ap_mm;
+
+            const double Fr =
+                (coeffs->Krc * h + coeffs->Kre) * cond->ap_mm;
+
+            const double Fa =
+                (coeffs->Kac * h + coeffs->Kae) * cond->ap_mm;
+
+            /*
+             * Transform rotating local forces into fixed machine axes.
+             */
+            Fx_out[sample] +=
+                -Ft * cos(flute_angle) - Fr * sin(flute_angle);
+
+            Fy_out[sample] +=
+                 Ft * sin(flute_angle) - Fr * cos(flute_angle);
+
+            Fz_out[sample] += Fa;
+        }
+    }
 }
