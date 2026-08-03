@@ -11,3 +11,4 @@ results/*.png
 results/*.pdf
 .DS_Store
 *.swp
+results/*.csv
